@@ -9,6 +9,11 @@ class Agent
     Fiber.new { start }.resume
   end
   
+  def register_module(model)
+    @logger.debug "Adding module #{model.get_module_name}"
+    @modules.push(model)
+  end
+  
   def start
     @logger.debug "Event machine starting."
     @logger.info "connecting to rabbitmq..."
@@ -19,7 +24,7 @@ class Agent
     @rabbit_queue = @rabbit_ch.queue("", :auto_delete => true, :exclusive => true)
     @rabbit_queue.bind(@rabbit_exch)
     @logger.info "...success"
-      
+    @modules = []  
     @rabbit_queue.subscribe() do |_, _, message|
       Fiber.new { 
         begin
@@ -32,7 +37,16 @@ class Agent
     
     @model = {}
     # lets fall over and rely on monit if we fail to load on startup
-    refresh_model
+    EM.next_tick do
+      Fiber.new {
+        begin
+          refresh_model
+        rescue Exception => e
+          @logger.error("Failed to perform our full data refresh #{e.message}\n#{e.backtrace}")
+        end
+        
+      }.resume
+    end
     
     EM.add_periodic_timer(10) do
       Fiber.new {
@@ -52,7 +66,9 @@ class Agent
     if @model != new_model
       @logger.info("Updating model from full refresh")
       @model = new_model
-      # TODO update squid and dante config here
+      @modules.each do |mod|
+        mod.reload_module(@model)   
+      end
     else
       @logger.info("Model in memory is correct")
     end
@@ -80,7 +96,9 @@ class Agent
     elsif message_obj[:type] == 'apply_schema'
       @model[message_obj[:username]]['allow_rules']= message_obj[:allow_rules]
     end
-    # TODO update squid and dante config here
+    @modules.each do |mod|
+      mod.reload_module(@model)   
+    end
     $logger.debug "After #{@model.to_json}"
   end
 end

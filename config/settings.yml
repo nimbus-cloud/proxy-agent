@@ -3,4 +3,9 @@ broker_end_point: http://cf-proxy-broker.10.244.0.34.xip.io
 broker_username: admin
 broker_password: password
 
+# write config to fake location for dev
+squid:
+  reload_command: "echo 'Hello World'"
+  config_dir: "tmp"
+  htpasswd_file: "tmp/htpasswd"  
 

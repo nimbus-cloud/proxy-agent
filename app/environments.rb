@@ -4,6 +4,7 @@ end
 
 configure :development, :production do
   $logger = Logger.new(STDOUT)
+  STDOUT.sync = true
 end
   
 configure do
@@ -20,9 +21,11 @@ configure do
   $logger.info("proxy agent starting")
   $logger.info("========================")
   
-  settings_filename = defined?(SETTINGS_FILENAME) ? SETTINGS_FILENAME : File.dirname(__FILE__) + '/../config/settings.yml'
+    
+  settings_filename = ENV['SETTINGS_FILENAME'] ? ENV['SETTINGS_FILENAME'] : File.dirname(__FILE__) + '/../config/settings.yml'
+  $logger.info("Loading settings file #{settings_filename}")
   $app_settings ||= YAML.load_file(settings_filename)
-  
+    
   # deliberately block startup until this call is successful
   $logger.info("Getting rabbitmq details")
   status = 0
