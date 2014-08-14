@@ -59,15 +59,21 @@ class Squid
       end      
     end
   end
-  
-  def reload_squid
-    
-    @logger.debug "Executing: #{@squid_reload_command}"
-    output = `#{@squid_reload_command} 2>&1`
+
+  def execute_command(command)
+    @logger.debug "Executing: #{command}"
+    output = `#{command} 2>&1`
     @logger.debug "Result: #{$?}"
     @logger.debug "Output: #{output}"
+    return [$?, output]
   end
+
+    
+  def reload_squid
+    execute_command(@squid_reload_command)
+  end
+  
   
 end
 
-$agent.register_module(Squid.new($logger))
+

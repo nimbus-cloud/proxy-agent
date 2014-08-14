@@ -15,4 +15,6 @@ group :test do
   gem 'rack-test'
   gem 'shoulda'
   gem 'activeresource' # to test the service
+  gem 'rspec-eventmachine'
+  gem 'fakefs'
 end

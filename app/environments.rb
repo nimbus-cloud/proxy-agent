@@ -1,3 +1,8 @@
+require 'logger'
+require 'YAML'
+require 'bunny'
+require 'json'
+
 configure :test do
   $logger = Logger.new("/dev/null")
 end
