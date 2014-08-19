@@ -12,8 +12,8 @@ describe Agent do
   before(:all) do
     $logger = Logger.new("/dev/null")
     #$logger = Logger.new(STDOUT)
+    $app_settings = {}
   end
-  
   
   describe "Startup" do 
   
@@ -124,6 +124,24 @@ describe Agent do
       end
       
     end
-      
+    
+    it 'should merge static users into the model' do
+      $app_settings['static_users']=[]
+      user = {}
+      user['username']= 'test'
+      user['htpasswd']= 'test'
+      user['sites'] = [ 'mail.google.com', 'foobar.com' ]
+      $app_settings['static_users'].push(user)
+      @fake_model['test']={}
+      @fake_model['test']['htpasswd']='test'
+      @fake_model['test']['allow_rules'] = [ 'mail.google.com', 'foobar.com' ]
+      with_event_machine do
+        @agent.start_in_fiber
+        done
+      end
+      expect(@agent.get_model).to eq(@fake_model)
+      $app_settings['static_users']=[]  
+    end
+    
   end
 end

@@ -69,10 +69,26 @@ class Agent
     @rabbit_queue = @rabbit_ch.queue("", :auto_delete => true, :exclusive => true)
     @rabbit_queue.bind(@rabbit_exch)
   end
-  
+
+  def merge_static_users(model_in)
+    model_out = model_in
+    if $app_settings['static_users']
+      $app_settings['static_users'].each do |user|
+        model_out[user['username']]={}
+        model_out[user['username']]['htpasswd']=user['htpasswd']
+        model_out[user['username']]['allow_rules']=user['sites']
+      end
+    end
+    
+    model_out
+  end
+
+    
   def refresh_model
     new_model_str = load_from_url
     new_model = JSON.parse(new_model_str)
+
+    new_model = merge_static_users(new_model)
     
     if @model != new_model
       @logger.info("Updating model from full refresh")
@@ -82,6 +98,7 @@ class Agent
       end
     end
   end
+  
   
   def get_faraday_url_connection
     conn = Faraday.new(:url => "#{$app_settings['broker_end_point']}/fullconfig")
