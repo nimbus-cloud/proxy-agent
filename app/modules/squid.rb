@@ -20,11 +20,13 @@ class Squid
   
   def write_squid_config(model)
     
-    File.open(@htpasswd_file, 'w') do |file| 
+    File.open("#{@htpasswd_file}.new", 'w') do |file| 
       model.each_key do |username|
         file.write("#{username}:#{model[username]['htpasswd']}\n")
       end
     end
+    
+    FileUtils.mv "#{@htpasswd_file}.new", "#{@htpasswd_file}", :force => true
     
     File.open(File.join(@config_dir, "users.conf"), 'w') do |file| 
       model.each_key do |username|
