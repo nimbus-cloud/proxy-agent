@@ -16,59 +16,59 @@ class Agent
     @modules.push(model)
   end
   
-  def start_in_fiber
-    Fiber.new { start }.resume
-  end
+  # def start_in_fiber
+  #   Fiber.new { start }.resume
+  # end
+  #
+  # def start
+  #   @logger.debug "Event machine starting."
+  #   @logger.info "connecting to rabbitmq..."
+  #   create_rabbit_mq_connection
+  #   @logger.info "...success"
+  #
+  #   @model = {}
+  #   # lets fall over and rely on monit if we fail to load on startup
+  #   EM.next_tick do
+  #     Fiber.new {
+  #       begin
+  #         refresh_model
+  #       rescue Exception => e
+  #         @logger.error("Failed to perform our full data refresh #{e.message}\n#{e.backtrace}")
+  #       end
+  #     }.resume
+  #
+  #     @rabbit_queue.subscribe() do |_, _, message|
+  #       Fiber.new {
+  #         begin
+  #           process_update(message)
+  #         rescue Exception => e
+  #           @logger.error("Failed to process \"#{message}\". #{e.message}\n#{e.backtrace}")
+  #           raise e
+  #         end
+  #       }.resume
+  #     end
+  #   end
+  #
+  #
+  #   EM.add_periodic_timer(60) do
+  #     Fiber.new {
+  #       begin
+  #         refresh_model
+  #       rescue Exception => e
+  #         @logger.error("Failed to perform our full data refresh #{e.message}\n#{e.backtrace}")
+  #       end
+  #     }.resume
+  #   end
+  # end
   
-  def start
-    @logger.debug "Event machine starting."
-    @logger.info "connecting to rabbitmq..."
-    create_rabbit_mq_connection
-    @logger.info "...success"
-    
-    @model = {}
-    # lets fall over and rely on monit if we fail to load on startup
-    EM.next_tick do
-      Fiber.new {
-        begin
-          refresh_model
-        rescue Exception => e
-          @logger.error("Failed to perform our full data refresh #{e.message}\n#{e.backtrace}")
-        end
-      }.resume
-      
-      @rabbit_queue.subscribe() do |_, _, message|
-        Fiber.new { 
-          begin
-            process_update(message)
-          rescue Exception => e
-            @logger.error("Failed to process \"#{message}\". #{e.message}\n#{e.backtrace}")
-            raise e
-          end 
-        }.resume
-      end
-    end
-
-    
-    EM.add_periodic_timer(60) do
-      Fiber.new {
-        begin
-          refresh_model
-        rescue Exception => e
-          @logger.error("Failed to perform our full data refresh #{e.message}\n#{e.backtrace}")
-        end
-      }.resume
-    end
-  end
-  
-  def create_rabbit_mq_connection
-    @rabbit_conn = Bunny.new($amqp_url)
-    @rabbit_conn.start
-    @rabbit_ch = @rabbit_conn.create_channel
-    @rabbit_exch = @rabbit_ch.fanout("proxy_events")
-    @rabbit_queue = @rabbit_ch.queue("", :auto_delete => true, :exclusive => true)
-    @rabbit_queue.bind(@rabbit_exch)
-  end
+  #def create_rabbit_mq_connection
+  #  @rabbit_conn = Bunny.new($amqp_url)
+  #  @rabbit_conn.start
+  #  @rabbit_ch = @rabbit_conn.create_channel
+  #  @rabbit_exch = @rabbit_ch.fanout("proxy_events")
+  #  @rabbit_queue = @rabbit_ch.queue("", :auto_delete => true, :exclusive => true)
+  #  @rabbit_queue.bind(@rabbit_exch)
+  #end
 
   def merge_static_users(model_in)
     model_out = model_in
