@@ -1,8 +1,13 @@
 require 'sinatra'
 require 'sinatra/reloader' if development?
+require 'sinatra/activerecord'
 require 'logger'
 require 'eventmachine'
 require 'rack/fiber_pool'
+
+require_relative 'squid_config'
+require_relative 'user_provisioner'
+require_relative '../app/modules/squid'
 
 $stdout.sync = true
 $stderr.sync = true
@@ -26,19 +31,23 @@ class ProxyAgent  < Sinatra::Base
 
   configure do
     $logger.info('*==========================*')
-    $logger.info('*cf-sharedfs agent starting*')
+    $logger.info('*cf-proxy agent starting*')
     $logger.info('*==========================*')
 
     settings_filename = ENV['SETTINGS_FILENAME'] ? ENV['SETTINGS_FILENAME'] : File.dirname(__FILE__) + '/../config/settings.yml'
     $logger.info("Loading settings file #{settings_filename}")
     $app_settings ||= YAML.load_file(settings_filename)
 
-    set :service, UserProvisioner.new($logger, $app_settings)
+    set :service, UserProvisioner.new($logger)
+    set :squidconf, SquidConfig.new($logger)
+
+    $logger.info 'Register current config model...'
+
+    settings.squidconf.register_module(Squid.new($logger))
+    settings.squidconf.refresh_model
 
     ActiveRecord::Base.logger = Logger.new($stdout)
 
-    $logger.info 'verifying existing users...'
-    settings.service.verify_users_exist!
     $logger.info 'started!'
   end
 

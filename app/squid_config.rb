@@ -4,7 +4,7 @@ require 'json'
 require 'bunny'
 require 'eventmachine'
 
-class Agent
+class SquidConfig
   
   def initialize(logger)
     @logger = logger

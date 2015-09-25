@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'logger'
-require File.join(File.dirname(__FILE__), '../app/', 'agent.rb')
+require File.join(File.dirname(__FILE__), '../app/', 'squid_config.rb')
 require_relative 'support/bunny_mock'
 require "rspec/em"
 require "em-synchrony"
