@@ -38,10 +38,10 @@ class ProxyAgent  < Sinatra::Base
     $logger.info("Loading settings file #{settings_filename}")
     $app_settings ||= YAML.load_file(settings_filename)
 
-    set :service, UserProvisioner.new($logger)
+    #set :service, UserProvisioner.new($logger)
     set :squidconf, SquidConfig.new($logger)
 
-    $logger.info 'Register current config model...'
+    $logger.info 'Registering current config model...'
 
     settings.squidconf.register_module(Squid.new($logger))
     settings.squidconf.refresh_model
@@ -60,9 +60,9 @@ class ProxyAgent  < Sinatra::Base
     "Proxy Agent"
   end
 
-  put '/provision/:username/:htpasswd' do |username, htpasswd|
-    $logger.info "provisioning proxy user #{username}"
-    success, msg = service.provision(username, htpasswd)
+  put '/provision/:message' do |message|
+    $logger.info "provisioning proxy user #{message}"
+    success, msg = squidconf.process_update(message)
 
     {
         success: success,
@@ -70,9 +70,9 @@ class ProxyAgent  < Sinatra::Base
     }.to_json
   end
 
-  delete '/unprovision/:username' do |username|
-    $logger.info "unprovisioning proxy user: #{username}"
-    success, msg = service.unprovision(username)
+  delete '/unprovision/:message' do |message|
+    $logger.info "unprovisioning proxy user: #{message}"
+    success, msg = service.unprovision(message)
 
     {
         :success => success,
@@ -91,10 +91,21 @@ class ProxyAgent  < Sinatra::Base
     }.to_json
   end
 
+  get '/fullconfig' do
+    $logger.info "showing full config"
+
+    squidconf.get_model.to_json
+
+  end
+
   private
 
   def service
     settings.service
+  end
+
+  def squidconf
+    settings.squidconf
   end
 
 end

@@ -1,7 +1,8 @@
 
-broker_end_point: http://cf-proxy-broker.10.244.0.34.xip.io
+#broker_end_point: http://cf-proxy-broker.10.244.0.34.xip.io
+broker_end_point: http://cf-proxy-broker.cf.test-01.test-paas.bskyb.com
 broker_username: admin
-broker_password: password
+broker_password: jNMcindijDM42s
 
 # write config to fake location for dev
 squid:

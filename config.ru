@@ -1,9 +1,11 @@
 dir = File.dirname(__FILE__)
 require File.join(dir, 'app/proxy-agent')
-require File.join(dir, 'app/config')
-require File.join(dir, 'app/environments')
+#require File.join(dir, 'app/config')
+#require File.join(dir, 'app/environments')
 
-run Rack::URLMap.new("/" => ProxyAgent.new)
+#run Rack::URLMap.new("/" => ProxyAgent.new)
+
+run ProxyAgent
 
 #EM.schedule do
 #  $agent = Agent.new($logger)
