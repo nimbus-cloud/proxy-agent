@@ -6,7 +6,6 @@ require 'eventmachine'
 require 'rack/fiber_pool'
 
 require_relative 'squid_config'
-require_relative 'user_provisioner'
 require_relative '../app/modules/squid'
 
 $stdout.sync = true
