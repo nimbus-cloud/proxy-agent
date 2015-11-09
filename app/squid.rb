@@ -1,23 +1,22 @@
 require 'fileutils';
 
 class Squid
-  def initialize(logger)
+
+  def initialize(logger, reload_cmd, conf_dir, pass_file)
     @logger = logger
-    @squid_reload_command = $app_settings['squid']['reload_command']
-    @config_dir = $app_settings['squid']['config_dir']
-    @htpasswd_file = $app_settings['squid']['htpasswd_file']
+    @squid_reload_command = reload_cmd
+    @config_dir = conf_dir
+    @htpasswd_file = pass_file
   end
   
-  def get_module_name
-    "squid"
-  end
-  
-  def reload_module(model)
+  def reload_configuration(model)
     @logger.info("Updating squid config #{model}")
     write_squid_config(model)
     reload_squid
   end
-  
+
+  private
+
   def write_squid_config(model)
     
     File.open("#{@htpasswd_file}.new", 'w') do |file| 
@@ -67,7 +66,7 @@ class Squid
     output = `#{command} 2>&1`
     @logger.debug "Result: #{$?}"
     @logger.debug "Output: #{output}"
-    return [$?, output]
+    [$?, output]
   end
 
     
