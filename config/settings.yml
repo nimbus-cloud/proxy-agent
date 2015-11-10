@@ -9,3 +9,11 @@ squid:
   config_dir: "tmp"
   htpasswd_file: "tmp/htpasswd"  
 
+static_users:
+- htpasswd: passowrd
+  sites:
+  - .com
+  - .org
+  - .net
+  - .io
+  username: user
