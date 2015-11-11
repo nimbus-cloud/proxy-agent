@@ -18,24 +18,30 @@ class Agent
   def new_user(username, passowrd)
     @logger.info "Agent creating new user: #{username}"
     @mutex.synchronize do
-      @model[username] = {'htpasswd' => passowrd, 'allow_rules' => []}
-      @squid.reload_configuration(@model)
+      tmp_model = @model.dup
+      tmp_model[username] = {'htpasswd' => passowrd, 'allow_rules' => []}
+      @squid.reload_configuration(tmp_model)
+      @model = tmp_model
     end
   end
 
   def delete_user(username)
     @logger.info "Agent deleting user: #{username}"
     @mutex.synchronize do
-      @model.delete(username)
-      @squid.reload_configuration(@model)
+      tmp_model = @model.dup
+      tmp_model.delete(username)
+      @squid.reload_configuration(tmp_model)
+      @model = tmp_model
     end
   end
 
   def apply_schema(username, allow_rules)
     @logger.info "Agent applying schema for user: #{username}, allow rules: #{allow_rules}"
     @mutex.synchronize do
-      @model[username]['allow_rules']= allow_rules
-      @squid.reload_configuration(@model)
+      tmp_model = @model.dup
+      tmp_model[username]['allow_rules']= allow_rules
+      @squid.reload_configuration(tmp_model)
+      @model = tmp_model
     end
   end
 
