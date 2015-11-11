@@ -1,16 +1,20 @@
 ENV['RACK_ENV'] = 'test'
 
+require 'json'
 require 'rack/test'
+require 'webmock/rspec'
 
-RSpec.configure do |config|
-  config.include Rack::Test::Methods
+DIR = File.dirname(__FILE__)
 
-  # Too much conflicting information on the internet about rspec
-  config.mock_with :rspec do |c|
-    c.syntax = [:should, :expect]
+RSpec.shared_context :rack_test do
+  include Rack::Test::Methods
+
+  def app
+    Rack::Builder.parse_file("#{DIR}/../config.ru").first
   end
-  config.expect_with :rspec do |c|
-    c.syntax = [:should, :expect]
+
+  def resp_hash
+    JSON.parse(last_response.body)
   end
-  
+
 end

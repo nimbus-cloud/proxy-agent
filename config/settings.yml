@@ -5,9 +5,9 @@ broker_password: password
 
 # write config to fake location for dev
 squid:
-  reload_command: "echo 'Hello World'"
-  config_dir: "tmp"
-  htpasswd_file: "tmp/htpasswd"  
+  reload_command: "echo '1'"
+  config_dir: "/tmp"
+  htpasswd_file: "/tmp/htpasswd"
 
 static_users:
 - htpasswd: passowrd

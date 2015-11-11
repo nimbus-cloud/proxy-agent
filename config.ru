@@ -1,4 +1,4 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
-require 'app/proxy-agent'
+require 'app/proxy_agent_app'
 
-run ProxyAgent
+run ProxyAgentApp

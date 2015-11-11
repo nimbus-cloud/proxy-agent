@@ -59,7 +59,7 @@ describe Squid do
     end
   
     it 'should call the squid reload script' do
-      @squid.should_receive(:execute_command).once
+      expect(@squid).to receive(:execute_command).once
       @squid.reload_configuration(@model)
     end
     

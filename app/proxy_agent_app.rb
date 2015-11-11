@@ -9,7 +9,7 @@ require_relative 'config_fetcher'
 STDOUT.sync = true
 $logger = Logger.new(STDOUT)
 
-class ProxyAgent  < Sinatra::Base
+class ProxyAgentApp < Sinatra::Base
 
   configure do
     $logger.info('========================')
@@ -40,6 +40,7 @@ class ProxyAgent  < Sinatra::Base
     end
 
     set :service, Agent.new($logger, squid, config_fetcher, static_users)
+    $logger.info('Proxy broker started!')
   end
 
   before '*' do
@@ -50,23 +51,42 @@ class ProxyAgent  < Sinatra::Base
     {:msg => 'Proxy Agent'}.to_json
   end
 
-
-  # TODO: refresh_model on startup ???
-  # TODO: refresh_model at interval (currently 60s) ??? - proper handling of singleton model value
-  # TODO: error handling ???
-
   put '/newuser/:username/:password' do |username, password|
-    service.new_user(username, password)
+    begin
+      service.new_user(username, password)
+      {}.to_json
+    rescue => e
+      status 500
+      msg = "Failed to create new user: #{e.message}"
+      $logger.error(msg)
+      {:message => msg}.to_json
+    end
   end
 
   delete '/deleteuser/:username' do |username|
-    service.delete_user(username)
+    begin
+      service.delete_user(username)
+      {}.to_json
+    rescue => e
+      status 500
+      msg = "Failed to delete user: #{e.message}"
+      $logger.error(msg)
+      {:message => msg}.to_json
+    end
   end
 
   post '/applyschema' do
-    request.body.rewind
-    payload = JSON.parse(request.body.read)
-    service.apply_schema(payload['username'], payload['allow_rules'])
+    begin
+      request.body.rewind
+      payload = JSON.parse(request.body.read)
+      service.apply_schema(payload['username'], payload['allow_rules'])
+      {}.to_json
+    rescue => e
+      status 500
+      msg = "Failed to apply schema: #{e.message}"
+      $logger.error(msg)
+      {:message => msg}.to_json
+    end
   end
 
   private
