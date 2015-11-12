@@ -7,9 +7,12 @@ require_relative 'agent'
 require_relative 'config_fetcher'
 
 STDOUT.sync = true
+STDERR.sync = true
 $logger = Logger.new(STDOUT)
 
 class ProxyAgentApp < Sinatra::Base
+
+  use Rack::CommonLogger, $logger
 
   configure do
     $logger.info('========================')
