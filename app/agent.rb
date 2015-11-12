@@ -39,7 +39,7 @@ class Agent
     @logger.info "Agent applying schema for user: #{username}, allow rules: #{allow_rules}"
     @mutex.synchronize do
       tmp_model = @model.dup
-      tmp_model[username]['allow_rules']= allow_rules
+      tmp_model[username]['allow_rules'] = allow_rules
       @squid.reload_configuration(tmp_model)
       @model = tmp_model
     end
