@@ -25,7 +25,7 @@ describe 'ProxyAgent' do
 
   describe '/newuser' do
     it 'works' do
-      put '/newuser/dave/dave1234'
+      put '/newuser', {:username => 'dave', :password => 'dave1234'}.to_json
 
       expect(last_response.status).to eq(200)
       expect(resp_hash).to eq({})
@@ -34,7 +34,7 @@ describe 'ProxyAgent' do
 
   describe '/deleteuser' do
     it 'works' do
-      put '/newuser/dave/dave1234'
+      put '/newuser', {:username => 'dave', :password => 'dave1234'}.to_json
 
       expect(last_response.status).to eq(200)
       expect(resp_hash).to eq({})

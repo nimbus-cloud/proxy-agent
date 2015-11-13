@@ -54,9 +54,11 @@ class ProxyAgentApp < Sinatra::Base
     {:msg => 'Proxy Agent'}.to_json
   end
 
-  put '/newuser/:username/:password' do |username, password|
+  put '/newuser' do
     begin
-      service.new_user(username, password)
+      request.body.rewind
+      payload = JSON.parse(request.body.read)
+      service.new_user(payload['username'], payload['password'])
       {}.to_json
     rescue => e
       status 500
