@@ -43,8 +43,8 @@ class Squid
       
     end
     
-    Dir.exists?(File.join(@config_dir, "groups")) and FileUtils.rm_r(File.join(@config_dir, "groups"))
-    Dir.exists?(File.join(@config_dir, "sites")) and FileUtils.rm_r(File.join(@config_dir, "sites"))
+    Dir.exist?(File.join(@config_dir, "groups")) and FileUtils.rm_r(File.join(@config_dir, "groups"))
+    Dir.exist?(File.join(@config_dir, "sites")) and FileUtils.rm_r(File.join(@config_dir, "sites"))
     FileUtils.mkdir_p(File.join(@config_dir, "groups"))
     FileUtils.mkdir_p(File.join(@config_dir, "sites"))
     

@@ -4,8 +4,9 @@ describe 'ProxyAgent' do
   include_context :rack_test
 
   before(:each) do
-    stub_request(:get, 'http://admin:password@cf-proxy-broker.10.244.0.34.xip.io/fullconfig').
-        to_return(:status => 200, :body => {}.to_json)
+    stub_request(:get, 'http://cf-proxy-broker.10.244.0.34.xip.io/fullconfig').
+        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Authorization'=>'Basic YWRtaW46cGFzc3dvcmQ=', 'User-Agent'=>'Faraday v0.11.0'}).
+        to_return(:status => 200, :body => '{}', :headers => {})
   end
 
 
