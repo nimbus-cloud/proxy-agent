@@ -44,7 +44,11 @@ describe 'ProxyAgent' do
 
   describe '/applyschema' do
     it 'works' do
-      put '/newuser/dave/dave1234'
+      put '/newuser', {:username => 'dave', :password => 'dave1234'}.to_json
+
+      expect(last_response.status).to eq(200)
+      expect(resp_hash).to eq({})
+
       post '/applyschema', {:username => 'dave', :allow_rules => []}.to_json
 
       expect(last_response.status).to eq(200)
