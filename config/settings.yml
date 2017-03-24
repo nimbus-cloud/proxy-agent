@@ -1,4 +1,5 @@
 
+managed_by_broker: true
 broker_end_point: http://cf-proxy-broker.10.244.0.34.xip.io
 broker_username: admin
 broker_password: password
